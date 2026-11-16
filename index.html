@@ -72,7 +72,7 @@ html,body{height:100%;margin:0;overflow:hidden;background:#f7c6d6 url(paper.jpg)
     <img src="map.webp" alt="" style="position: absolute; left: -330px; top: -330px; width: 1050px">
     <div style="position: absolute; inset: auto 0 0 0; height: 70px; background: linear-gradient(180deg, rgba(247,198,214,0) 0%, #f7c6d6 100%)"></div>
   </div>
-  <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding: 0 20px 22px; gap: 12px">
+  <div style="{{introPad}}">
     <span style="font-weight: 700; font-size: 14px; letter-spacing: 1.5px; color: #c2316b; text-transform: uppercase">экскурсия по lazy campus</span>
     <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1.04">в каком образе пойдёшь гулять по кампусу?</span>
     <span style="font-size: 16px; line-height: 1.4">выбери себе героиню: она пройдёт по карте и покажет, как устроена учёба</span>
@@ -155,12 +155,12 @@ html,body{height:100%;margin:0;overflow:hidden;background:#f7c6d6 url(paper.jpg)
     </div>
   </sc-if>
   <sc-if value="{{showDone}}" hint-placeholder-val="{{ false }}">
-    <button class="btn" onClick="{{toApp}}" style="position: absolute; left: 14px; right: 14px; bottom: 16px; z-index: 4; height: 56px; border: 0; border-radius: 999px; background: #4a77a0; color: #FFFFFF; font-family: RC, sans-serif; font-weight: 700; font-size: 17px; text-transform: lowercase; box-shadow: 0 8px 18px rgba(63,95,128,.28); cursor: pointer">дальше</button>
+    <button class="btn" onClick="{{toApp}}" style="position: absolute; left: 14px; right: 14px; bottom: {{doneBtnBottom}}; z-index: 4; height: 56px; border: 0; border-radius: 999px; background: #4a77a0; color: #FFFFFF; font-family: RC, sans-serif; font-weight: 700; font-size: 17px; text-transform: lowercase; box-shadow: 0 8px 18px rgba(63,95,128,.28); cursor: pointer">дальше</button>
   </sc-if>
 
   <!-- шторка места -->
   <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
-    <div class="sheet paper noscroll" style="position: absolute; left: 0; right: 0; bottom: 0; height: {{sheetH}}; overflow-y: auto; border-radius: 28px 28px 0 0; padding: 16px 18px 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; z-index: 5; box-shadow: 0 -10px 30px rgba(63,95,128,.25)">
+    <div class="sheet paper noscroll" style="position: absolute; left: 0; right: 0; bottom: 0; height: {{sheetH}}; overflow-y: auto; border-radius: 28px 28px 0 0; padding: 16px 18px {{sheetPadB}}; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; z-index: 5; box-shadow: 0 -10px 30px rgba(63,95,128,.25)">
       <div style="display: flex; justify-content: space-between; align-items: center">
         <span style="font-weight: 700; font-size: 14px; color: #c2316b">{{sheetKicker}}</span>
         <sc-if value="{{canClose}}" hint-placeholder-val="{{ true }}">
@@ -292,7 +292,7 @@ html,body{height:100%;margin:0;overflow:hidden;background:#f7c6d6 url(paper.jpg)
 
 <!-- ================= МИНИ-АПП ================= -->
 <sc-if value="{{isApp}}" hint-placeholder-val="{{ false }}">
-<div class="paper fadein" style="position: absolute; inset: 0; padding: 22px 20px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; z-index: 6">
+<div class="paper fadein" style="position: absolute; inset: 0; padding: 22px 20px {{appPadB}}; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; z-index: 6">
   <span style="font-weight: 700; font-size: 14px; color: #c2316b">ты обошла весь кампус · новинка этого потока</span>
   <span style="font-family: Anticva, Georgia, serif; font-size: 28px; line-height: 1.04">а теперь главное: всё это живёт в мини-апке your mentor</span>
   <span style="font-size: 16px; line-height: 1.45">анти-сдвг формат: буквально <span style="text-transform: none">ВСЁ</span>, чтобы у тебя не было возможности выпасть из блога и потерять фокус…<br><br>пока ты ленишься — мини-аппка собирает всё в одном месте и пушит по ключевым задачкам🤞🏼</span>
@@ -442,6 +442,9 @@ class Component extends DCLogic {
 
     // высота экрана: на сайте подставляется реальная высота телефона, в макете 844
     const H = (typeof window !== 'undefined' && window.__stageH) || 844;
+    // SB — нижняя полоса, которую на iPhone может закрыть панель браузера: карта уходит под неё, кнопки стоят выше
+    const SB = (typeof window !== 'undefined' && window.__safeB) || 0;
+    const HV = H - SB;
     const CX = 195, CY = Math.round(H * 0.4);
     const sheetUp = !!s.open && !s.walking;
     const overview = s.phase === 'explore' && !sheetUp;
@@ -449,10 +452,14 @@ class Component extends DCLogic {
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     // карта всегда закрывает видимую часть экрана: при открытом рассказе низ карты прячется под шторкой,
     // поэтому камера может подняться выше и героиня стоит над шторкой
-    const SHEET_FR = H < 700 ? 0.64 : 0.56;
-    const SHEET_TOP = Math.round(H * (1 - SHEET_FR));
+    const SHEET_FR = HV < 700 ? 0.64 : 0.56;
+    const SHEET_PX = Math.round(HV * SHEET_FR) + SB;
+    const SHEET_TOP = H - SHEET_PX;
+    // обзор карты: все точки между подсказкой сверху и низом экрана, «большой зал» не прячется под подсказкой
+    const TOPSAFE = 166, BOTSAFE = HV - (all ? 86 : 16);
+    const ovY = Math.max((TOPSAFE + BOTSAFE) / 2 - 640 * K, TOPSAFE - 459 * K);
     const panX = clamp(overview ? -205 * K : CX - cur.sx * K, 390 - 1000 * K, 0);
-    const panY = clamp((sheetUp ? SHEET_TOP - 40 : CY) - cur.sy * K, (sheetUp ? SHEET_TOP + 30 : H) - 1000 * K, 0);
+    const panY = overview ? clamp(ovY, H - 1000 * K, 0) : clamp((sheetUp ? SHEET_TOP - 40 : CY) - cur.sy * K, (sheetUp ? SHEET_TOP + 30 : H) - 1000 * K, 0);
     const charX = cur.sx * K + panX;
     const charY = cur.sy * K + panY;
     const bubX = Math.max(140, Math.min(250, charX));
@@ -486,8 +493,8 @@ class Component extends DCLogic {
         style: 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border-radius:20px;cursor:pointer;font-family:RC,sans-serif;color:#3f5f80;text-transform:lowercase;' + (s.look === k ? 'background:#FFFFFF;border:3px solid #f2618f;box-shadow:0 8px 18px rgba(63,95,128,.18)' : 'background:rgba(255,255,255,.45);border:3px solid transparent')
       })),
       start: () => this.setState({ screen: 'map' }),
-      bannerStyle: 'position:relative;overflow:hidden;flex:0 0 auto;height:' + (H < 700 ? '15%' : '24%'),
-      lookImgStyle: 'width:auto;max-width:100%;object-fit:contain;height:' + Math.max(120, Math.min(190, H - 480)) + 'px',
+      bannerStyle: 'position:relative;overflow:hidden;flex:0 0 auto;height:' + Math.round(HV * (HV < 700 ? 0.15 : 0.24)) + 'px',
+      lookImgStyle: 'width:auto;max-width:100%;object-fit:contain;height:' + Math.max(120, Math.min(190, HV - 480)) + 'px',
       lookSrc: look.src,
       panStyle: 'position:absolute;left:0;top:0;width:1000px;height:1000px;transform-origin:0 0;transform:translate(' + panX + 'px,' + panY + 'px) scale(' + K + ')',
       sayStyle: 'position:absolute;left:' + bubX + 'px;bottom:' + bubBottom + 'px;transform:translateX(-50%);width:max-content;max-width:260px;padding:10px 16px;border-radius:20px;background:#FFF8DC;box-shadow:0 8px 20px rgba(63,95,128,.22);font-size:16px;line-height:1.35;text-align:center;z-index:3',
@@ -516,7 +523,11 @@ class Component extends DCLogic {
       toStars: () => { this.setState({ screen: 'map' }); walkTo('stars', 'stars'); },
       toFinal: () => walkTo('lib', 'final'),
       sheetOpen: !!s.open && !s.walking,
-      sheetH: Math.round(SHEET_FR * 100) + '%',
+      sheetH: SHEET_PX + 'px',
+      sheetPadB: (22 + SB) + 'px',
+      introPad: 'flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding: 0 20px ' + (22 + SB) + 'px; gap: 12px',
+      doneBtnBottom: (16 + SB) + 'px',
+      appPadB: (20 + SB) + 'px',
       canClose: s.phase === 'explore',
       closeSheet: () => this.setState({ open: null }),
       sheetKicker: kickers[s.open] || '',
@@ -568,10 +579,11 @@ function fit(){
   var touch=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
   var ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&touch);
   // на iPhone (Safari, Telegram, Chrome) нижняя панель браузера лежит поверх страницы — оставляем под неё место
-  var B=ios?76:0, s, H, top=0;
-  if(touch && vw<=600){ s=vw/390; H=(vh-B)/s; if(H<520){ s=(vh-B)/520; H=520; } }
-  else { s=vh>=600?Math.max(1,Math.min(1.35,vh/800)):Math.max(0.8,vh/600); H=Math.min(1000,(vh-B)/s); top=Math.max(0,(vh-B-H*s)/2); }
-  window.__stageH=H; stage.style.height=H+'px'; stage.style.top=top+'px';
+  // карта всегда на весь экран; на iPhone снизу 76px, которые может закрыть панель браузера, — туда не ставим кнопки
+  var B=(ios&&touch)?76:0, s, H, top=0;
+  if(touch && vw<=600){ s=vw/390; H=vh/s; if((vh-B)/s<520){ s=(vh-B)/520; H=vh/s; } }
+  else { s=vh>=600?Math.max(1,Math.min(1.35,vh/800)):Math.max(0.8,vh/600); H=Math.min(1000,vh/s); top=Math.max(0,(vh-H*s)/2); }
+  window.__safeB=Math.round(B/s); window.__stageH=H; stage.style.height=H+'px'; stage.style.top=top+'px';
   stage.style.transform='translateX(-50%) scale('+s+')';
   if(window.__comp) window.__comp.forceUpdate();
 }
