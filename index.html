@@ -7,6 +7,11 @@
 <meta name="description" content="выбери героиню и прогуляйся по кампусу blog university: библиотека, большой зал, пиццерия, пруд и кампусы с менторами">
 <meta name="theme-color" content="#f7c6d6">
 <link rel="preload" href="map.webp" as="image">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(114286896,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/114286896" style="position:absolute;left:-9999px;" alt=""></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
 
 <style>
 @font-face{font-family:"Anticva";font-weight:400;font-display:swap;src:url(anticva.woff2) format("woff2")}
@@ -505,6 +510,30 @@ function fit(){
 fit();
 preact.render(preact.h(Component,{ref:function(c){window.__comp=c;}}),stage);
 window.addEventListener('resize',fit); window.addEventListener('orientationchange',function(){setTimeout(fit,200)});
+</script>
+<script>
+// цели для Метрики: шаги экскурсии
+(function(){
+  var sent={};
+  function goal(name,once){ if(once&&sent[name])return; sent[name]=1; try{ ym(114286896,'reachGoal',name); }catch(e){} }
+  document.addEventListener('click',function(e){
+    var el=e.target.closest('button,a'); if(!el) return;
+    var t=(el.textContent||'').trim().toLowerCase(), lab=(el.getAttribute('aria-label')||'').toLowerCase();
+    if(lab.indexOf('образ ')===0) goal('look_pick',true);
+    else if(t.indexOf('идти в кампус')>=0) goal('tour_start',true);
+    else if(el.classList.contains('pulse')) { var ids={'большой зал':'hall','библиотека':'library','пиццерия':'pizzeria','пруд':'pond','кампусы':'campus'}; goal('place_open'); if(ids[lab]) goal('place_'+ids[lab],true); }
+    else if(t==='пропустить') goal('map_skip',true);
+    else if(t==='дальше') goal('all_places',true);
+    else if(t.indexOf('на крышу к звёздам')>=0) goal('app_seen',true);
+    else if(t.indexOf('посмотреть на 400 звёзд')>=0) goal('cases_click');
+    else if(t.indexOf('последняя точка')>=0) goal('final_open',true);
+    else if(t.indexOf('взять пропуск')>=0) goal('pass_taken',true);
+    else if(t.indexOf('пробный урок')>=0) goal('trial_lesson');
+    else if(t.indexOf('экскурсия от директора')>=0) goal('director_tour');
+    else if(t.indexOf('написать старшекурснику')>=0) goal('senior_click');
+    else if(t.indexOf('пройти экскурсию заново')>=0) goal('restart');
+  },true);
+})();
 </script>
 </body>
 </html>
