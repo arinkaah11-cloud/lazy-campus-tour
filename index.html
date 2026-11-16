@@ -44,7 +44,7 @@ a{color:#3f5f80}a:hover{color:#c2316b}
 
 <style>
 html,body{height:100%;margin:0;overflow:hidden;background:#f7c6d6 url(paper.jpg) repeat;-webkit-text-size-adjust:100%}
-#stage{position:fixed;left:50%;top:50%;width:390px;height:844px;transform-origin:50% 50%}
+#stage{position:fixed;left:50%;top:0;width:390px;height:844px;transform-origin:50% 0}
 </style>
 </head>
 <body>
@@ -57,18 +57,18 @@ html,body{height:100%;margin:0;overflow:hidden;background:#f7c6d6 url(paper.jpg)
 <!-- ================= ВЫБОР ОБРАЗА ================= -->
 <sc-if value="{{isIntro}}" hint-placeholder-val="{{ true }}">
 <div class="paper" style="position: absolute; inset: 0; display: flex; flex-direction: column">
-  <div style="height: 24%; position: relative; overflow: hidden; flex: 0 0 auto">
+  <div style="{{bannerStyle}}">
     <img src="map.webp" alt="" style="position: absolute; left: -330px; top: -330px; width: 1050px">
     <div style="position: absolute; inset: auto 0 0 0; height: 70px; background: linear-gradient(180deg, rgba(247,198,214,0) 0%, #f7c6d6 100%)"></div>
   </div>
-  <div style="flex: 1 1 auto; display: flex; flex-direction: column; padding: 0 20px 22px; gap: 12px">
+  <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding: 0 20px 22px; gap: 12px">
     <span style="font-weight: 700; font-size: 14px; letter-spacing: 1.5px; color: #c2316b; text-transform: uppercase">экскурсия по lazy campus</span>
     <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1.04">в каком образе пойдёшь гулять по кампусу?</span>
     <span style="font-size: 16px; line-height: 1.4">выбери себе героиню: она пройдёт по карте и покажет, как устроена учёба</span>
     <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 4px">
       <sc-for list="{{looks}}" as="lk" hint-placeholder-count="4">
         <button class="btn" onClick="{{lk.pick}}" aria-label="образ {{lk.name}}" style="{{lk.style}}">
-          <img src="{{lk.src}}" alt="" style="height: 190px; width: auto; max-width: 100%; object-fit: contain">
+          <img src="{{lk.src}}" alt="" style="{{lookImgStyle}}">
           <span style="font-weight: 700; font-size: 14px; line-height: 1.1; text-align: center; text-transform: none">{{lk.name}}</span>
         </button>
       </sc-for>
@@ -435,6 +435,8 @@ class Component extends DCLogic {
         style: 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border-radius:20px;cursor:pointer;font-family:RC,sans-serif;color:#3f5f80;text-transform:lowercase;' + (s.look === k ? 'background:#FFFFFF;border:3px solid #f2618f;box-shadow:0 8px 18px rgba(63,95,128,.18)' : 'background:rgba(255,255,255,.45);border:3px solid transparent')
       })),
       start: () => this.setState({ screen: 'map' }),
+      bannerStyle: 'position:relative;overflow:hidden;flex:0 0 auto;height:' + (H < 700 ? '15%' : '24%'),
+      lookImgStyle: 'width:auto;max-width:100%;object-fit:contain;height:' + Math.max(120, Math.min(190, H - 480)) + 'px',
       lookSrc: look.src,
       panStyle: 'position:absolute;left:0;top:0;width:1000px;height:1000px;transform-origin:0 0;transform:translate(' + panX + 'px,' + panY + 'px) scale(' + K + ')',
       sayStyle: 'position:absolute;left:' + bubX + 'px;bottom:' + bubBottom + 'px;transform:translateX(-50%);width:max-content;max-width:260px;padding:10px 16px;border-radius:20px;background:#FFF8DC;box-shadow:0 8px 20px rgba(63,95,128,.22);font-size:16px;line-height:1.35;text-align:center;z-index:3',
@@ -445,13 +447,13 @@ class Component extends DCLogic {
       walkerStyle: 'position:absolute;left:' + cur.sx + 'px;top:' + cur.sy + 'px;width:0;height:0;z-index:3',
       faceStyle: 'position:absolute;left:0;bottom:0;transform:translateX(-50%) scaleX(' + s.facing + ');transform-origin:0 100%',
       stepClass: s.walking ? 'walking' : 'idle',
-      showSay: !!sayKey && !s.open,
+      showSay: false,
       say: sayKey ? SAY[sayKey] : '',
       stepLabel: 'шаг ' + stepIdx + ' из 4',
       bars: [1,2,3,4].map((i) => ({ style: 'height:4px;border-radius:4px;background:' + (i <= stepIdx ? '#f2618f' : 'rgba(255,255,255,.7)') })),
       showHint: s.phase === 'explore' && !s.open && !s.walking,
       visitedCount: visitedCount,
-      hintText: all ? 'весь кампус пройден! дальше покажу новинку потока' : 'нажми на розовую точку, и героиня отведёт тебя туда',
+      hintText: all ? 'ты обошла весь кампус! жми «дальше», покажу новинку потока' : (visitedCount === 0 ? 'привет! я старшекурсница lazy campus. нажимай на розовые точки, я тебя проведу' : 'нажми на следующую розовую точку, и я отведу тебя туда'),
       notAll: !all,
       showDone: all && s.phase === 'explore' && !s.open && !s.walking,
       toApp: () => this.setState({ screen: 'app', open: null }),
@@ -491,11 +493,13 @@ class Component extends DCLogic {
 
 var stage=document.getElementById('stage');
 function fit(){
-  var vw=window.innerWidth, vh=window.innerHeight, s=vw/390, H=vh/s;
-  // телефон: растягиваем на весь экран; компьютер и планшет: телефон по центру
-  if(H<640 || H>1000){ s=Math.min(vw/390, vh/844); H=844; }
-  window.__stageH=H; stage.style.height=H+'px';
-  stage.style.transform='translate(-50%,-50%) scale('+s+')';
+  var vw=window.innerWidth, vh=window.innerHeight;
+  var touch=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+  // на телефоне снизу лежит панель браузера (Safari, Telegram) — оставляем под неё место
+  var B=touch?76:0, s=vw/390, H=(vh-B)/s, top=0;
+  if(vw>600 || H<520 || H>1000){ s=Math.min(vw/390,(vh-B)/844); H=844; top=Math.max(0,(vh-B-844*s)/2); }
+  window.__stageH=H; stage.style.height=H+'px'; stage.style.top=top+'px';
+  stage.style.transform='translateX(-50%) scale('+s+')';
   if(window.__comp) window.__comp.forceUpdate();
 }
 fit();
