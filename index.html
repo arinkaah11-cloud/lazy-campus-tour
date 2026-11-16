@@ -133,7 +133,7 @@ html,body{height:100%;margin:0;overflow:hidden;background:#f7c6d6 url(paper.jpg)
 
   <!-- шапка -->
   <div style="position: absolute; top: 0; left: 0; right: 0; padding: 14px 16px 0; display: flex; flex-direction: column; gap: 7px; z-index: 4; pointer-events: none">
-    <div style="display: flex; justify-content: space-between; align-items: center">
+    <div style="{{hdrRowStyle}}">
       <span style="padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.85); font-weight: 700; font-size: 13px">blog university · lazy campus</span>
       <span style="padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.85); font-weight: 700; font-size: 13px; color: #c2316b">{{stepLabel}}</span>
     </div>
@@ -285,6 +285,11 @@ html,body{height:100%;margin:0;overflow:hidden;background:#f7c6d6 url(paper.jpg)
 </div>
 </sc-if>
 
+<!-- музыка (только на сайте) -->
+<sc-if value="{{soundBtn}}" hint-placeholder-val="{{ false }}">
+  <button onClick="{{toggleSound}}" aria-label="{{soundLabel}}" title="{{soundLabel}}" style="position: absolute; top: 11px; right: 14px; z-index: 9; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: rgba(255,255,255,.92); box-shadow: 0 4px 10px rgba(63,95,128,.2); font-size: 15px; line-height: 32px; text-align: center; cursor: pointer">{{soundIcon}}</button>
+</sc-if>
+
 <!-- ================= МИНИ-АПП ================= -->
 <sc-if value="{{isApp}}" hint-placeholder-val="{{ false }}">
 <div class="paper fadein" style="position: absolute; inset: 0; padding: 22px 20px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; z-index: 6">
@@ -388,6 +393,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this.t) clearTimeout(this.t); if (this.onPop) window.removeEventListener('popstate', this.onPop); }
   renderVals() {
+    const SND = (typeof window !== 'undefined' && window.__buSound) || null;
     const s = this.state;
     const MAP = 'map.webp';
     const LOOKS = {
@@ -495,6 +501,11 @@ class Component extends DCLogic {
       showSay: false,
       say: sayKey ? SAY[sayKey] : '',
       stepLabel: 'шаг ' + stepIdx + ' из 4',
+      soundBtn: !!SND && s.screen !== 'app',
+      soundIcon: SND && SND.on ? '🔊' : '🔇',
+      soundLabel: SND && SND.on ? 'выключить музыку' : 'включить музыку',
+      toggleSound: () => { if (SND) SND.toggle(); },
+      hdrRowStyle: 'display: flex; justify-content: space-between; align-items: center' + (SND ? '; padding-right: 40px' : ''),
       bars: [1,2,3,4].map((i) => ({ style: 'height:4px;border-radius:4px;background:' + (i <= stepIdx ? '#f2618f' : 'rgba(255,255,255,.7)') })),
       showHint: s.phase === 'explore' && !s.open && !s.walking,
       visitedCount: visitedCount,
@@ -538,6 +549,20 @@ class Component extends DCLogic {
 }
 
 var stage=document.getElementById('stage');
+// фоновая музыка: файл лежит в бизоне, грузится потоком; браузеры разрешают звук только после касания
+(function(){
+  var SRC='https://cdn.bizon365.ru/110062/songs_that_will_make_you_feel_like_the_main_character_-_playlist-_p_.mp3';
+  var a=new Audio(); a.preload='none'; a.loop=true; a.volume=0.35; a.src=SRC;
+  var off=false; try{ off=localStorage.getItem('bu_sound')==='off'; }catch(e){}
+  var S=window.__buSound={on:false};
+  function rr(){ if(window.__comp) window.__comp.forceUpdate(); }
+  function play(){ var p=a.play(); S.on=true; rr(); if(p&&p.catch) p.catch(function(){ S.on=false; rr(); }); }
+  S.toggle=function(){ if(S.on){ a.pause(); S.on=false; off=true; } else { off=false; play(); } try{ localStorage.setItem('bu_sound',off?'off':'on'); }catch(e){} rr(); };
+  function first(e){ document.removeEventListener('pointerdown',first,true);
+    if(off || S.on) return; if(e.target.closest && e.target.closest('button[aria-label$="музыку"]')) return; play(); }
+  document.addEventListener('pointerdown',first,true);
+  document.addEventListener('visibilitychange',function(){ if(document.hidden) a.pause(); else if(S.on) a.play().catch(function(){}); });
+})();
 function fit(){
   var vw=window.innerWidth, vh=window.innerHeight, ua=navigator.userAgent||'';
   var touch=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
@@ -568,6 +593,7 @@ window.addEventListener('resize',fit); window.addEventListener('orientationchang
     if(lab.indexOf('образ ')===0) goal('look_pick',true);
     else if(t.indexOf('идти в кампус')>=0) goal('tour_start',true);
     else if(el.classList.contains('pulse')) { var ids={'большой зал':'hall','библиотека':'library','пиццерия':'pizzeria','пруд':'pond','кампусы':'campus'}; goal('place_open'); if(ids[lab]) goal('place_'+ids[lab],true); }
+    else if(lab==='выключить музыку') goal('music_off');
     else if(t==='пропустить') goal('map_skip',true);
     else if(t==='дальше') goal('all_places',true);
     else if(t.indexOf('на крышу к звёздам')>=0) goal('app_seen',true);
