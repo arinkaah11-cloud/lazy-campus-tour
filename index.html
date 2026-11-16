@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ЭКСКУРСИЯ ПО LAZY CAMPUS · BLOG UNIVERSITY</title>
+<meta name="description" content="выбери героиню и прогуляйся по кампусу blog university: библиотека, большой зал, пиццерия, пруд и кампусы с менторами">
+<meta property="og:title" content="экскурсия по lazy campus · blog university">
+<meta property="og:description" content="выбери героиню и прогуляйся по кампусу blog university">
+<meta property="og:image" content="map.webp">
+<meta name="theme-color" content="#f7c6d6">
+<link rel="preload" href="map.webp" as="image">
+
+<style>
+@font-face{font-family:"Anticva";font-weight:400;font-display:swap;src:url(anticva.woff2) format("woff2")}
+@font-face{font-family:"RC";font-weight:300;font-style:italic;font-display:swap;src:url(rc-cyr-300i.woff2) format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"RC";font-weight:400;font-display:swap;src:url(rc-cyr-400.woff2) format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"RC";font-weight:700;font-display:swap;src:url(rc-cyr-700.woff2) format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"RC";font-weight:400;font-display:swap;src:url(rc-lat-400.woff2) format("woff2");unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122}
+@font-face{font-family:"RC";font-weight:700;font-display:swap;src:url(rc-lat-700.woff2) format("woff2");unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122}
+body{margin:0;background:#e9e7e2}
+a{color:#3f5f80}a:hover{color:#c2316b}
+.paper{background:#f7c6d6 url(paper.jpg) repeat}
+.pan{transition:transform 1.4s cubic-bezier(.45,0,.25,1)}
+.walker{transition:left 1.4s cubic-bezier(.45,0,.25,1), top 1.4s cubic-bezier(.45,0,.25,1)}
+.walking{animation:step .32s ease-in-out infinite}
+@keyframes step{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-6px) rotate(1.5deg)}}
+.idle{animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.lens{animation:lens 1s cubic-bezier(.2,.8,.3,1) both}
+@keyframes lens{from{transform:scale(0);opacity:.2}to{transform:scale(1);opacity:1}}
+.pulse{animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(242,97,143,.55)}100%{box-shadow:0 0 0 18px rgba(242,97,143,0)}}
+.pop{animation:pop .35s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes pop{from{opacity:0;transform:translate(-50%,8px) scale(.9)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+.sheet{animation:up .35s cubic-bezier(.2,.9,.3,1) both}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.fadein{animation:fadein .5s ease both}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.btn{transition:transform .15s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(1px)}
+.noscroll::-webkit-scrollbar{display:none}
+.sheet>*{flex-shrink:0}
+@media (prefers-reduced-motion: reduce){.walking,.idle,.lens,.pulse,.pop,.sheet,.fadein{animation:none}.pan,.walker{transition:none}}
+</style>
+
+<style>
+html,body{height:100%;margin:0;overflow:hidden;background:#f7c6d6 url(paper.jpg) repeat}
+#stage{position:fixed;left:50%;top:50%;width:390px;height:844px;transform-origin:50% 50%}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<template id="tpl">
+
+
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #a9c6dd; font-family: RC, 'Roboto Condensed', 'Arial Narrow', sans-serif; color: #3f5f80; text-transform: lowercase">
+
+<!-- ================= ВЫБОР ОБРАЗА ================= -->
+<sc-if value="{{isIntro}}" hint-placeholder-val="{{ true }}">
+<div class="paper" style="position: absolute; inset: 0; display: flex; flex-direction: column">
+  <div style="height: 210px; position: relative; overflow: hidden; flex: 0 0 auto">
+    <img src="map.webp" alt="" style="position: absolute; left: -330px; top: -330px; width: 1050px">
+    <div style="position: absolute; inset: auto 0 0 0; height: 70px; background: linear-gradient(180deg, rgba(247,198,214,0) 0%, #f7c6d6 100%)"></div>
+  </div>
+  <div style="flex: 1 1 auto; display: flex; flex-direction: column; padding: 0 20px 22px; gap: 12px">
+    <span style="font-weight: 700; font-size: 14px; letter-spacing: 1.5px; color: #c2316b; text-transform: uppercase">экскурсия по lazy campus</span>
+    <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1.04">в каком образе пойдёшь гулять по кампусу?</span>
+    <span style="font-size: 16px; line-height: 1.4">выбери себе героиню: она пройдёт по карте и покажет, как устроена учёба</span>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 4px">
+      <sc-for list="{{looks}}" as="lk" hint-placeholder-count="4">
+        <button class="btn" onClick="{{lk.pick}}" aria-label="образ {{lk.name}}" style="{{lk.style}}">
+          <img src="{{lk.src}}" alt="" style="height: 190px; width: auto; max-width: 100%; object-fit: contain">
+          <span style="font-weight: 700; font-size: 14px; line-height: 1.1; text-align: center; text-transform: none">{{lk.name}}</span>
+        </button>
+      </sc-for>
+    </div>
+    <button class="btn" onClick="{{start}}" style="margin-top: 14px; height: 58px; border: 0; border-radius: 999px; background: #4a77a0; color: #FFFFFF; font-family: RC, sans-serif; font-weight: 700; font-size: 18px; text-transform: lowercase; box-shadow: 0 8px 18px rgba(63,95,128,.28); cursor: pointer">идти в кампус</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= КАРТА ================= -->
+<sc-if value="{{isMapLike}}" hint-placeholder-val="{{ false }}">
+<div class="fadein" style="position: absolute; inset: 0">
+  <div class="pan" style="{{panStyle}}">
+    <img src="map.webp" alt="карта кампуса blog university в нью-йорке" style="position: absolute; left: 0; top: 0; width: 1000px; height: 1000px; filter: grayscale(.92) brightness(1.06) contrast(.88)">
+    <sc-for list="{{lenses}}" as="ln" hint-placeholder-count="1">
+      <div class="lens" style="{{ln.style}}">
+        <img src="map.webp" alt="" style="{{ln.imgStyle}}">
+      </div>
+    </sc-for>
+
+    <sc-if value="{{showPins}}" hint-placeholder-val="{{ true }}">
+      <sc-for list="{{pins}}" as="p" hint-placeholder-count="5">
+        <div style="{{p.wrap}}">
+          <button class="btn pulse" onClick="{{p.go}}" aria-label="{{p.name}}" style="width: 52px; height: 52px; border-radius: 50%; border: 3px solid #FFFFFF; background: #f2618f; cursor: pointer; display: flex; align-items: center; justify-content: center; box-sizing: border-box">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF"></span>
+          </button>
+          <span style="padding: 4px 11px; border-radius: 999px; background: #FFFFFF; font-weight: 700; font-size: 14px; letter-spacing: .6px; text-transform: uppercase; color: #3f5f80; white-space: nowrap; box-shadow: 0 3px 8px rgba(63,95,128,.25)">{{p.name}}</span>
+        </div>
+      </sc-for>
+    </sc-if>
+    <sc-for list="{{checks}}" as="c" hint-placeholder-count="0">
+      <span style="{{c.style}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"></path></svg></span>
+    </sc-for>
+
+    <!-- героиня -->
+    <div class="walker" style="{{walkerStyle}}">
+      <span style="position: absolute; left: 50%; bottom: -4px; width: 44px; height: 12px; margin-left: -22px; border-radius: 50%; background: rgba(40,40,60,.28)"></span>
+      <div style="{{faceStyle}}">
+        <img class="{{stepClass}}" src="{{lookSrc}}" alt="твоя героиня" style="height: 150px; width: auto; display: block">
+      </div>
+    </div>
+  </div>
+
+  <!-- реплика -->
+  <sc-if value="{{showSay}}" hint-placeholder-val="{{ true }}">
+    <div class="pop" style="{{sayStyle}}">
+      {{say}}
+      <span style="{{tailStyle}}"></span>
+    </div>
+  </sc-if>
+
+  <!-- шапка -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; padding: 14px 16px 0; display: flex; flex-direction: column; gap: 7px; z-index: 4; pointer-events: none">
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <span style="padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.85); font-weight: 700; font-size: 13px">blog university · lazy campus</span>
+      <span style="padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.85); font-weight: 700; font-size: 13px; color: #c2316b">{{stepLabel}}</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px">
+      <sc-for list="{{bars}}" as="b" hint-placeholder-count="4">
+        <span style="{{b.style}}"></span>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- подсказка под шапкой -->
+  <sc-if value="{{showHint}}" hint-placeholder-val="{{ true }}">
+    <div class="paper" style="position: absolute; left: 14px; right: 14px; top: 62px; z-index: 4; border-radius: 22px; padding: 10px 10px 10px 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 20px rgba(63,95,128,.22)">
+      <span style="font-family: Anticva, Georgia, serif; font-size: 30px; color: #c2316b; line-height: 1; flex: 0 0 auto">{{visitedCount}}/5</span>
+      <span style="font-size: 14px; line-height: 1.3; flex: 1 1 auto">{{hintText}}</span>
+      <sc-if value="{{notAll}}" hint-placeholder-val="{{ true }}">
+        <button class="btn" onClick="{{toApp}}" style="flex: 0 0 auto; min-height: 44px; padding: 0 12px; border: 2px solid #FFFFFF; border-radius: 999px; background: rgba(255,255,255,.55); color: #3f5f80; font-family: RC, sans-serif; font-size: 14px; text-transform: lowercase; cursor: pointer">пропустить</button>
+      </sc-if>
+    </div>
+  </sc-if>
+  <sc-if value="{{showDone}}" hint-placeholder-val="{{ false }}">
+    <button class="btn" onClick="{{toApp}}" style="position: absolute; left: 14px; right: 14px; bottom: 16px; z-index: 4; height: 56px; border: 0; border-radius: 999px; background: #4a77a0; color: #FFFFFF; font-family: RC, sans-serif; font-weight: 700; font-size: 17px; text-transform: lowercase; box-shadow: 0 8px 18px rgba(63,95,128,.28); cursor: pointer">дальше</button>
+  </sc-if>
+
+  <!-- шторка места -->
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="sheet paper noscroll" style="position: absolute; left: 0; right: 0; bottom: 0; height: 470px; overflow-y: auto; border-radius: 28px 28px 0 0; padding: 16px 18px 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; z-index: 5; box-shadow: 0 -10px 30px rgba(63,95,128,.25)">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span style="font-weight: 700; font-size: 14px; color: #c2316b">{{sheetKicker}}</span>
+        <sc-if value="{{canClose}}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{closeSheet}}" aria-label="закрыть" style="width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.8); cursor: pointer; display: flex; align-items: center; justify-content: center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3f5f80" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </button>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{isLib}}" hint-placeholder-val="{{ false }}">
+        <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1">библиотека</span>
+        <div style="background: rgba(255,255,255,.58); border-radius: 22px; padding: 14px 16px; font-size: 16px; line-height: 1.5">доступ на лейзи-кампусе откроется сразу в начале обучения ко всей библиотеке уроков, а выбранный трек обучения поможет понять, в каком порядке их смотреть — смотреть уроки можно в своём cozy-темпе<br><br>всю программу сможешь посмотреть в конце экскурсии в библиотеке и даже посмотреть один из уроков (тссс это секрет🤫)</div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+          <div style="background: #FFFFFF; border-radius: 20px; padding: 12px 14px; display: flex; flex-direction: column"><span style="font-family: Anticva, Georgia, serif; font-size: 32px; color: #c2316b">115</span><span style="font-size: 14px">уроков в главном кампусе</span></div>
+          <div style="background: #FFFFFF; border-radius: 20px; padding: 12px 14px; display: flex; flex-direction: column"><span style="font-family: Anticva, Georgia, serif; font-size: 32px; color: #c2316b">9</span><span style="font-size: 14px">направлений плюс курсовые</span></div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <sc-for list="{{topics}}" as="tp" hint-placeholder-count="9">
+            <span style="padding: 4px 11px; border-radius: 999px; background: rgba(255,255,255,.7); font-size: 14px"><b style="color: #c2316b">{{tp.n}}</b> {{tp.name}}</span>
+          </sc-for>
+        </div>
+        <div style="background: #fbd7e4; border-radius: 18px; padding: 12px 16px; font-size: 15px; line-height: 1.45">а ещё на lazy campus будут открытые лекции от директора. загляни в большой зал.</div>
+      </sc-if>
+
+      <sc-if value="{{isHall}}" hint-placeholder-val="{{ false }}">
+        <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1">большой зал</span>
+        <div style="background: rgba(255,255,255,.58); border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+          <span style="font-weight: 700; font-size: 14px; color: #c2316b">открытые лекции</span>
+          <span style="font-size: 16px; line-height: 1.5">здесь директор проводит особые онлайн-лекции для всего потока. на этом лейзи-потоке таких лекций будет 5 — самая актуальная информация в живом формате.<br><br>в целом, говорят, если прийти только сюда и не посмотреть ни один урок, шансы вырастить блог всё ещё большие🤣🙏🏼 информэйшен будет просто в точку.</span>
+        </div>
+        <div style="background: #dce8f2; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+          <span style="font-weight: 700; font-size: 14px; color: #c2316b">только на lazy-потоке</span>
+          <span style="font-family: Anticva, Georgia, serif; font-size: 22px">пижамная вечеринка</span>
+          <span style="font-size: 16px; line-height: 1.5">3 раза на лейзи-потоке вместо посиделок у пруда откроется возможность попасть на пижамную вечеринку с директором — то есть возможность получить разбор от директора в чате…</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isPizza}}" hint-placeholder-val="{{ false }}">
+        <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1">пиццерия</span>
+        <div style="background: rgba(255,255,255,.58); border-radius: 22px; padding: 14px 16px; font-size: 16px; line-height: 1.5">самое уютное место, где собираются все студенты: болтают, поддерживают друг друга, делятся успехами, встречаются вживую в городах<br><br>скажу так: комьюнити BLOG UNI — это то, что не описать словами, надо хотя бы один раз попасть, чтобы понять🥹 это саааамое лучшее комьюнити эвер.</div>
+        <div style="background: #FFFFFF; border-radius: 22px; padding: 10px; display: flex; flex-direction: column; gap: 8px">
+          <span style="align-self: center; font-size: 12px; background: rgba(63,95,128,.55); color: #FFFFFF; padding: 2px 10px; border-radius: 999px">можешь почитать примеры сообщений:</span>
+          <img src="pizza1.jpg" alt="сообщения студенток саши и вики в чате пиццерия" style="width: 100%; border-radius: 14px">
+          <img src="pizza2.jpg" alt="сообщение студентки юлии в чате пиццерия" style="width: 100%; border-radius: 14px">
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isPond}}" hint-placeholder-val="{{ false }}">
+        <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1">пруд</span>
+        <div style="background: rgba(255,255,255,.58); border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+          <span style="font-weight: 700; font-size: 14px; color: #c2316b">пикник с ментором</span>
+          <span style="font-size: 16px; line-height: 1.5">ох, здесь у нас каждый день работает дежурный ментор и не пропускает ни одного запроса!! с понедельника по пятницу ментор из основного состава (а они у нас самые крутые, реально…) отвечает на любой вопрос по блогу &amp; делает разбор любого контента.<br><br>как итог: за всё обучение ты можешь забрать опыт не только директора, но и всех наших менторов-больших блогеров с их уникальными superpowers🦸🏼</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px">
+          <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+            <div style="{{d.style}}"><span style="font-weight: 700; font-size: 15px">{{d.day}}</span><span style="font-size: 10px">{{d.note}}</span></div>
+          </sc-for>
+        </div>
+        <div style="background: #dce8f2; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+          <span style="font-weight: 700; font-size: 14px; color: #c2316b">новое</span>
+          <span style="font-family: Anticva, Georgia, serif; font-size: 22px">недели от ментора</span>
+          <span style="font-size: 16px; line-height: 1.5">что-то новенькое: теперь у нас будут ещё и недели от ментора, где ментор делится со всем потоком материалом от себя, отражающим его суперсилу!</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isCampus}}" hint-placeholder-val="{{ false }}">
+        <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1">кампусы с менторами</span>
+        <div style="background: rgba(255,255,255,.58); border-radius: 22px; padding: 14px 16px; font-size: 16px; line-height: 1.5">все студенты живут в кампусах в комнатах с рум мейт, с которым можно вместе идти к целям в блоге. у каждого кампуса есть свой ментор. ментор составляет для тебя индивидуальную стратегию блога и ведёт тебя к целям весь поток💔</div>
+        <span style="font-weight: 700; font-size: 14px; color: #c2316b">так выглядит стратегия</span>
+        <div style="height: 280px; border-radius: 26px; background: #FFFFFF; padding: 7px; box-sizing: border-box">
+          <img src="strategy.webp" alt="пример индивидуальной стратегии от ментора" style="width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 20px">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <sc-for list="{{campuses}}" as="c" hint-placeholder-count="6">
+            <div style="display: flex; justify-content: space-between; gap: 10px; padding: 9px 14px; border-radius: 16px; background: #FFFFFF"><span style="font-family: Anticva, Georgia, serif; font-size: 16px">{{c.name}}</span><span style="font-size: 14px">{{c.mentor}}</span></div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isStars}}" hint-placeholder-val="{{ false }}">
+        <span style="font-family: Anticva, Georgia, serif; font-size: 32px; line-height: 1">обсерватория на эмпайр-стейт</span>
+        <div style="background: rgba(255,255,255,.58); border-radius: 22px; padding: 14px 16px; font-size: 16px; line-height: 1.5">с самой высокой точки кампуса видно наших звёзд: здесь собраны легендарные студенты <span style="text-transform: none">BLOG UNI</span>.🔭⭐️<br><br>да, тут целых 400 звёзд — это каждый шестой студент, оформленный здесь, а ведь мы успеваем выкладывать не всё и делимся только результатами за поток… так что это не случайность, а высокий результат методологии обучения.</div>
+        <a class="btn" href="https://t.me/+I6qqpE0opVM5OTE6" target="_blank" style="height: 54px; border-radius: 999px; background: #4a77a0; color: #FFFFFF; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 16px rgba(63,95,128,.24)">посмотреть на 400 звёзд ⭐️</a>
+        <button class="btn" onClick="{{toFinal}}" style="height: 50px; border: 2px solid #FFFFFF; border-radius: 999px; background: rgba(255,255,255,.4); color: #3f5f80; font-family: RC, sans-serif; font-size: 16px; text-transform: lowercase; cursor: pointer">последняя точка экскурсии</button>
+      </sc-if>
+
+      <sc-if value="{{isFinal}}" hint-placeholder-val="{{ false }}">
+        <span style="font-family: Anticva, Georgia, serif; font-size: 30px; line-height: 1.02">забеги в библиотеку перед выходом</span>
+        <sc-if value="{{noPass}}" hint-placeholder-val="{{ true }}">
+          <span style="font-size: 16px; line-height: 1.5">без пропуска туда не пускают. держи, я поделюсь своим, только никому не говори…</span>
+          <button class="btn" onClick="{{takePass}}" style="height: 56px; border: 0; border-radius: 999px; background: #f2618f; color: #FFFFFF; font-family: RC, sans-serif; font-weight: 700; font-size: 17px; text-transform: lowercase; box-shadow: 0 8px 18px rgba(217,67,125,.3); cursor: pointer">взять пропуск</button>
+        </sc-if>
+        <sc-if value="{{hasPass}}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; border-radius: 20px; overflow: hidden; background: #FFF8DC">
+            <div style="flex: 1 1 auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-weight: 700; font-size: 12px; color: #c2316b">пропуск · lazy campus</span>
+              <span style="font-family: Anticva, Georgia, serif; font-size: 22px">гость библиотеки</span>
+            </div>
+            <div style="width: 76px; border-left: 3px dashed #f7c6d6; display: flex; align-items: center; justify-content: center; overflow: hidden">
+              <img src="{{lookSrc}}" alt="" style="height: 70px; margin-top: 30px">
+            </div>
+          </div>
+          <div style="background: rgba(255,255,255,.58); border-radius: 22px; padding: 14px 16px; font-size: 16px; line-height: 1.5">тут ты можешь посмотреть полноценную экскурсию словами самого директора — послушать всю программу уроков, конкурсов и всего, что я не успела теперь рассказать<br><br>ну и можешь забрать с собой домой один урок из библиотеки, просто очень хочу, чтобы ты увидела, насколько у нас здесь классно📚<br><br>ох, да, я же даже не показала тебе красавчика Джейкоба… ну пусть это будет сюрпризом, когда ты поступишь<br><br>xoxo, до встречи в кампусе!!</div>
+          <a class="btn" href="https://kinescope.io/tKhoqEiGyieSkqr4Au3GLS" target="_blank" style="min-height: 56px; padding: 8px 16px; box-sizing: border-box; border-radius: 20px; background: rgba(255,255,255,.75); color: #3f5f80; text-decoration: none; display: flex; align-items: center; gap: 12px">
+            <span style="width: 38px; height: 38px; border-radius: 50%; background: #4a77a0; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><svg width="15" height="15" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span>
+            <span style="display: flex; flex-direction: column"><span style="font-weight: 700; font-size: 16px">пробный урок</span><span style="font-size: 14px">урок из библиотеки blog university</span></span>
+          </a>
+          <a class="btn" href="https://kinescope.io/eoup7vcyNhtNViremx17yJ" target="_blank" style="min-height: 56px; padding: 8px 16px; box-sizing: border-box; border-radius: 20px; background: rgba(255,255,255,.75); color: #3f5f80; text-decoration: none; display: flex; align-items: center; gap: 12px">
+            <span style="width: 38px; height: 38px; border-radius: 50%; background: #4a77a0; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span>
+            <span style="display: flex; flex-direction: column"><span style="font-weight: 700; font-size: 16px">экскурсия от директора</span><span style="font-size: 14px">полина показывает весь lazy campus</span></span>
+          </a>
+          <div style="border-radius: 22px; background: #3f5f80; color: #FFFFFF; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-family: Anticva, Georgia, serif; font-size: 25px">хочешь заселиться?</span>
+            <span style="font-size: 15px; line-height: 1.45; color: #EEF3F8">напиши старшекурснику, он ещё держит для тебя местечко!<br><br>но поторопись, в лейзи-кампусе осталось меньше 30 незанятых кроватей!🛌💤</span>
+            <a class="btn" href="https://t.me/bu_lazycampus_bot" target="_blank" style="height: 52px; border-radius: 999px; background: #f2618f; color: #FFFFFF; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; text-decoration: none">написать старшекурснику</a>
+          </div>
+          <button onClick="{{restart}}" style="height: 44px; border: 0; background: transparent; color: #3f5f80; font-family: RC, sans-serif; font-size: 15px; cursor: pointer; text-decoration: underline; text-transform: lowercase">пройти экскурсию заново</button>
+        </sc-if>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ================= МИНИ-АПП ================= -->
+<sc-if value="{{isApp}}" hint-placeholder-val="{{ false }}">
+<div class="paper fadein" style="position: absolute; inset: 0; padding: 22px 20px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; z-index: 6">
+  <span style="font-weight: 700; font-size: 14px; color: #c2316b">ты обошла весь кампус · новинка этого потока</span>
+  <span style="font-family: Anticva, Georgia, serif; font-size: 28px; line-height: 1.04">а теперь главное: всё это живёт в мини-апке your mentor</span>
+  <span style="font-size: 16px; line-height: 1.45">анти-сдвг формат: буквально <span style="text-transform: none">ВСЁ</span>, чтобы у тебя не было возможности выпасть из блога и потерять фокус…<br><br>пока ты ленишься — мини-аппка собирает всё в одном месте и пушит по ключевым задачкам🤞🏼</span>
+  <div style="display: flex; gap: 6px; flex-wrap: wrap">
+    <sc-for list="{{shots}}" as="sh" hint-placeholder-count="3">
+      <button onClick="{{sh.pick}}" style="{{sh.style}}">{{sh.label}}</button>
+    </sc-for>
+  </div>
+  <div style="flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: flex-end; gap: 18px; position: relative">
+    <img src="{{lookSrc}}" alt="" style="height: 70%; max-width: 110px; object-fit: contain">
+    <div style="width: 180px; height: 100%; border-radius: 32px; padding: 7px; background: #FFFFFF; box-shadow: 0 18px 36px rgba(63,95,128,.28); box-sizing: border-box">
+      <div style="width: 100%; height: 100%; border-radius: 26px; overflow: hidden">
+        <sc-if value="{{shotHome}}" hint-placeholder-val="{{ true }}"><img src="app_home.webp" alt="главный экран мини-апки" style="width: 100%; height: 100%; object-fit: cover; object-position: top"></sc-if>
+        <sc-if value="{{shotTrack}}" hint-placeholder-val="{{ false }}"><img src="app_track.webp" alt="трек и шаги в мини-апке" style="width: 100%; height: 100%; object-fit: cover; object-position: top"></sc-if>
+        <sc-if value="{{shotLook}}" hint-placeholder-val="{{ false }}"><img src="app_look.webp" alt="распаковка персонажа в мини-апке" style="width: 100%; height: 100%; object-fit: cover; object-position: top"></sc-if>
+      </div>
+    </div>
+  </div>
+  <button class="btn" onClick="{{toStars}}" style="height: 56px; border: 0; border-radius: 999px; background: #4a77a0; color: #FFFFFF; font-family: RC, sans-serif; font-weight: 700; font-size: 17px; text-transform: lowercase; box-shadow: 0 8px 18px rgba(63,95,128,.28); cursor: pointer">дальше: на крышу к звёздам</button>
+</div>
+</sc-if>
+
+</div>
+</template>
+<script>!function(n){"function"==typeof define&&define.amd?define(n):n()}(function(){var n,t,e,i,r,o,f,u,c,a,s,h,l,p,y,d,v,_="http://www.w3.org/2000/svg",w="http://www.w3.org/1999/xhtml",m=null,g=void 0,b={},k=[],x=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,C=Array.isArray;function M(n,t){for(var e in t)n[e]=t[e];return n}function S(n){n&&n.parentNode&&n.parentNode.removeChild(n)}function $(t,e,i){var r,o,f,u={};for(f in e)"key"==f?r=e[f]:"ref"==f?o=e[f]:u[f]=e[f];if(arguments.length>2&&(u.children=arguments.length>3?n.call(arguments,2):i),"function"==typeof t&&t.defaultProps!=m)for(f in t.defaultProps)u[f]===g&&(u[f]=t.defaultProps[f]);return A(t,u,r,o,m)}function A(n,i,r,o,f){var u={type:n,props:i,key:r,ref:o,__k:m,__:m,__b:0,__e:m,__c:m,constructor:g,__v:f==m?++e:f,__i:-1,__u:0};return f==m&&t.vnode!=m&&t.vnode(u),u}function I(n){return n.children}function P(n,t){this.props=n,this.context=t}function E(n,t){if(t==m)return n.__?E(n.__,n.__i+1):m;for(var e;t<n.__k.length;t++)if((e=n.__k[t])!=m&&e.__e!=m)return e.__e;return"function"==typeof n.type?E(n):m}function F(n){if(n.__P&&n.__d){var e=n.__v,i=e.__e,r=[],o=[],f=M({},e);f.__v=e.__v+1,t.vnode&&t.vnode(f),B(n.__P,f,e,n.__n,n.__P.namespaceURI,32&e.__u?[i]:m,r,i==m?E(e):i,!!(32&e.__u),o),f.__v=e.__v,f.__.__k[f.__i]=f,G(r,f,o),e.__e=e.__=null,f.__e!=i&&H(f)}}function H(n){if((n=n.__)!=m&&n.__c!=m)return n.__e=n.__c.base=m,n.__k.some(function(t){if(t!=m&&t.__e!=m)return n.__e=n.__c.base=t.__e}),H(n)}function L(n){(!n.__d&&(n.__d=!0)&&r.push(n)&&!T.__r++||o!=t.debounceRendering)&&((o=t.debounceRendering)||f)(T)}function T(){try{for(var n,t=1;r.length;)r.length>t&&r.sort(u),n=r.shift(),t=r.length,F(n)}finally{r.length=T.__r=0}}function j(n,t,e,i,r,o,f,u,c,a,s){var h,l,p,y,d,v,_=i&&i.__k||k,w=t.length;for(c=O(e,t,_,c,w),h=0;h<w;h++)(p=e.__k[h])!=m&&(l=-1!=p.__i&&_[p.__i]||b,p.__i=h,v=B(n,p,l,r,o,f,u,c,a,s),y=p.__e,p.ref&&l.ref!=p.ref&&(l.ref&&Q(l.ref,m,p),s.push(p.ref,p.__c||y,p)),d==m&&y!=m&&(d=y),4&p.__u?(c=V(p,c,n),l.__e&&(l.__e=m)):"function"==typeof p.type&&v!==g?c=v:y&&(c=y.nextSibling),p.__u&=-7);return e.__e=d,c}function O(n,t,e,i,r){var o,f,u,c,a,s=e.length,h=s,l=0;for(n.__k=new Array(r),o=0;o<r;o++)(f=t[o])!=m&&"boolean"!=typeof f&&"function"!=typeof f?("string"==typeof f||"number"==typeof f||"bigint"==typeof f||f.constructor==String?f=n.__k[o]=A(m,f,m,m,m):C(f)?f=n.__k[o]=A(I,{children:f},m,m,m):f.constructor===g&&f.__b>0?f=n.__k[o]=A(f.type,f.props,f.key,f.ref?f.ref:m,f.__v):n.__k[o]=f,c=o+l,f.__=n,f.__b=n.__b+1,a=f.__i=z(f,e,c,h),u=m,-1!=a&&(h--,(u=e[a])&&(u.__u|=2)),u==m||u.__v==m?(-1==a&&(r>s?l--:r<s&&l++),"function"!=typeof f.type&&(f.__u|=4)):a!=c&&(a==c-1?l--:a==c+1?l++:(a>c?l--:l++,f.__u|=4))):n.__k[o]=m;if(h)for(o=0;o<s;o++)(u=e[o])!=m&&0==(2&u.__u)&&(u.__e==i&&(i=E(u)),U(u,u));return i}function V(n,t,e){var i,r;if("function"==typeof n.type){for(i=n.__k,r=0;i&&r<i.length;r++)i[r]&&(i[r].__=n,t=V(i[r],t,e));return t}n.__e!=t&&(t&&n.type&&!t.parentNode&&(t=E(n)),t=e.insertBefore(n.__e,t||m));do{t=t&&t.nextSibling}while(t!=m&&8==t.nodeType);return t}function z(n,t,e,i){var r,o,f,u=n.key,c=n.type,a=t[e],s=a!=m&&0==(2&a.__u);if(a===m&&null==u||s&&u==a.key&&c==a.type)return e;if(i>(s?1:0))for(r=e-1,o=e+1;r>=0||o<t.length;)if((a=t[f=r>=0?r--:o++])!=m&&0==(2&a.__u)&&u==a.key&&c==a.type)return f;return-1}function N(n,t,e){"-"==t[0]?n.setProperty(t,e==m?"":e):n[t]=e==m?"":"number"!=typeof e||x.test(t)?e:e+"px"}function R(n,t,e,i,r){var o,f;n:if("style"==t)if("string"==typeof e)n.style.cssText=e;else{if("string"==typeof i&&(n.style.cssText=i=""),i)for(t in i)e&&t in e||N(n.style,t,"");if(e)for(t in e)i&&e[t]==i[t]||N(n.style,t,e[t])}else if("o"==t[0]&&"n"==t[1])o=t!=(t=t.replace(h,"$1")),f=t.toLowerCase(),t=f in n||"onFocusOut"==t||"onFocusIn"==t?f.slice(2):t.slice(2),n.l||(n.l={}),n.l[t+o]=e,e?i?e[s]=i[s]:(e[s]=l,n.addEventListener(t,o?y:p,o)):n.removeEventListener(t,o?y:p,o);else{if(r==_)t=t.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!=t&&"height"!=t&&"href"!=t&&"list"!=t&&"form"!=t&&"tabIndex"!=t&&"download"!=t&&"rowSpan"!=t&&"colSpan"!=t&&"role"!=t&&"popover"!=t&&t in n)try{n[t]=e==m?"":e;break n}catch(n){}"function"==typeof e||(e==m||!1===e&&"-"!=t[4]?n.removeAttribute(t):n.setAttribute(t,"popover"==t&&1==e?"":e))}}function q(n){return function(e){if(this.l){var i=this.l[e.type+n];if(e[a]==m)e[a]=l++;else if(e[a]<i[s])return;return i(t.event?t.event(e):e)}}}function B(n,e,i,r,o,f,u,c,a,s){var h,l,p,y,d,v,_,w,b,x,$,A,F,H,L,T,O=e.type;if(e.constructor!==g)return m;128&i.__u&&(a=!!(32&i.__u),f=[c=e.__e=i.__e]),(h=t.__b)&&h(e);n:if("function"==typeof O){l=u.length;try{if(b=e.props,x=O.prototype&&O.prototype.render,$=(h=O.contextType)&&r[h.__c],A=h?$?$.props.value:h.__:r,i.__c?w=(p=e.__c=i.__c).__=p.__E:(x?e.__c=p=new O(b,A):(e.__c=p=new P(b,A),p.constructor=O,p.render=W),$&&$.sub(p),p.state||(p.state={}),p.__n=r,y=p.__d=!0,p.__h=[],p._sb=[]),x&&p.__s==m&&(p.__s=p.state),x&&O.getDerivedStateFromProps!=m&&(p.__s==p.state&&(p.__s=M({},p.__s)),M(p.__s,O.getDerivedStateFromProps(b,p.__s))),d=p.props,v=p.state,p.__v=e,y)x&&O.getDerivedStateFromProps==m&&p.componentWillMount!=m&&p.componentWillMount(),x&&p.componentDidMount!=m&&p.__h.push(p.componentDidMount);else{if(x&&O.getDerivedStateFromProps==m&&b!==d&&p.componentWillReceiveProps!=m&&p.componentWillReceiveProps(b,A),e.__v==i.__v||!p.__e&&p.shouldComponentUpdate!=m&&!1===p.shouldComponentUpdate(b,p.__s,A)){e.__v!=i.__v&&(p.props=b,p.state=p.__s,p.__d=!1),e.__e=i.__e,e.__k=i.__k,e.__k.some(function(n){n&&(n.__=e)}),k.push.apply(p.__h,p._sb),p._sb=[],p.__h.length&&u.push(p),c=E(i);break n}p.componentWillUpdate!=m&&p.componentWillUpdate(b,p.__s,A),x&&p.componentDidUpdate!=m&&p.__h.push(function(){p.componentDidUpdate(d,v,_)})}if(p.context=A,p.props=b,p.__P=n,p.__e=!1,F=t.__r,H=0,x)p.state=p.__s,p.__d=!1,F&&F(e),h=p.render(p.props,p.state,p.context),k.push.apply(p.__h,p._sb),p._sb=[];else do{p.__d=!1,F&&F(e),h=p.render(p.props,p.state,p.context),p.state=p.__s}while(p.__d&&++H<25);p.state=p.__s,p.getChildContext!=m&&(r=M(M({},r),p.getChildContext())),x&&!y&&p.getSnapshotBeforeUpdate!=m&&(_=p.getSnapshotBeforeUpdate(d,v)),L=h!=m&&h.type===I&&h.key==m?J(h.props.children):h,c=j(n,C(L)?L:[L],e,i,r,o,f,u,c,a,s),p.base=e.__e,e.__u&=-161,p.__h.length&&u.push(p),w&&(p.__E=p.__=m)}catch(n){if(u.length=l,e.__v=m,a||f!=m){if(n.then){for(e.__u|=a?160:128;c&&8==c.nodeType&&c.nextSibling;)c=c.nextSibling;f!=m&&(f[f.indexOf(c)]=m),e.__e=c}else if(f!=m)for(T=f.length;T--;)S(f[T])}else e.__e=i.__e;e.__k==m&&(e.__k=i.__k||[]),n.then||D(e),t.__e(n,e,i)}}else f==m&&e.__v==i.__v?(e.__k=i.__k,e.__e=i.__e):c=e.__e=K(i.__e,e,i,r,o,f,u,a,s);return(h=t.diffed)&&h(e),128&e.__u?void 0:c}function D(n){n&&(n.__c&&(n.__c.__e=!0),n.__k&&n.__k.some(D))}function G(n,e,i){for(var r=0;r<i.length;r++)Q(i[r],i[++r],i[++r]);t.__c&&t.__c(e,n),n.some(function(e){try{n=e.__h,e.__h=[],n.some(function(n){n.call(e)})}catch(n){t.__e(n,e.__v)}})}function J(n){return"object"!=typeof n||n==m||n.__b>0?n:C(n)?n.map(J):n.constructor!==g?null:M({},n)}function K(e,i,r,o,f,u,c,a,s){var h,l,p,y,d,v,k,x=r.props||b,M=i.props,$=i.type;if("svg"==$?f=_:"math"==$?f="http://www.w3.org/1998/Math/MathML":f||(f=w),u!=m)for(h=0;h<u.length;h++)if((d=u[h])&&"setAttribute"in d==!!$&&($?d.localName==$:3==d.nodeType)){e=d,u[h]=m;break}if(e==m){if($==m)return document.createTextNode(M);e=document.createElementNS(f,$,M.is&&M),a&&(t.__m&&t.__m(i,u),a=!1),u=m}if($==m)x===M||a&&e.data==M||(e.data=M);else{if(u="textarea"==$&&M.defaultValue!=m?m:u&&n.call(e.childNodes),!a&&u!=m)for(x={},h=0;h<e.attributes.length;h++)x[(d=e.attributes[h]).name]=d.value;for(h in x)d=x[h],"dangerouslySetInnerHTML"==h?p=d:"children"==h||h in M||"value"==h&&"defaultValue"in M||"checked"==h&&"defaultChecked"in M||R(e,h,m,d,f);for(h in M)d=M[h],"children"==h?y=d:"dangerouslySetInnerHTML"==h?l=d:"value"==h?v=d:"checked"==h?k=d:a&&"function"!=typeof d||x[h]===d||R(e,h,d,x[h],f);if(l)a||p&&(l.__html==p.__html||l.__html==e.innerHTML)||(e.innerHTML=l.__html),i.__k=[];else if(p&&(e.innerHTML=""),j("template"==i.type?e.content:e,C(y)?y:[y],i,r,o,"foreignObject"==$?w:f,u,c,u?u[0]:r.__k&&E(r,0),a,s),u!=m)for(h=u.length;h--;)S(u[h]);a&&"textarea"!=$||(h="value","progress"==$&&v==m?e.removeAttribute("value"):v!=g&&(v!==e[h]||"progress"==$&&!v||"option"==$&&v!=x[h])&&R(e,h,v,x[h],f),h="checked",k!=g&&k!=e[h]&&R(e,h,k,x[h],f))}return e}function Q(n,e,i){try{if("function"==typeof n){var r="function"==typeof n.__u;r&&n.__u(),r&&e==m||(n.__u=n(e))}else n.current=e}catch(n){t.__e(n,i)}}function U(n,e,i){var r,o;if(t.unmount&&t.unmount(n),(r=n.ref)&&(r.current&&r.current!=n.__e||Q(r,m,e)),(r=n.__c)!=m){if(r.componentWillUnmount)try{r.componentWillUnmount()}catch(n){t.__e(n,e)}r.base=r.__P=r.__n=m}if(r=n.__k)for(o=0;o<r.length;o++)r[o]&&U(r[o],e,i||"function"!=typeof n.type);i||S(n.__e),n.__c=n.__=n.__e=g}function W(n,t,e){return this.constructor(n,e)}function X(e,i,r){var o,f,u,c;i==document&&(i=document.documentElement),t.__&&t.__(e,i),f=(o="function"==typeof r)?m:r&&r.__k||i.__k,u=[],c=[],B(i,e=(!o&&r||i).__k=$(I,m,[e]),f||b,b,i.namespaceURI,!o&&r?[r]:f?m:i.firstChild?n.call(i.childNodes):m,u,!o&&r?r:f?f.__e:i.firstChild,o,c),G(u,e,c),e.props.children=m}n=k.slice,t={__e:function(n,t,e,i){for(var r,o,f;t=t.__;)if((r=t.__c)&&!r.__)try{if((o=r.constructor)&&o.getDerivedStateFromError!=m&&(r.setState(o.getDerivedStateFromError(n)),f=r.__d),r.componentDidCatch!=m&&(r.componentDidCatch(n,i||{}),f=r.__d),f)return r.__E=r}catch(t){n=t}throw n}},e=0,i=function(n){return n!=m&&n.constructor===g},P.prototype.setState=function(n,t){var e;e=this.__s!=m&&this.__s!=this.state?this.__s:this.__s=M({},this.state),"function"==typeof n&&(n=n(M({},e),this.props)),n&&M(e,n),n!=m&&this.__v&&(t&&this._sb.push(t),L(this))},P.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),L(this))},P.prototype.render=I,r=[],f="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,u=function(n,t){return n.__v.__b-t.__v.__b},T.__r=0,c=Math.random().toString(8),a="__d"+c,s="__a"+c,h=/(PointerCapture)$|Capture$/i,l=0,p=q(!1),y=q(!0),d=0,v={__proto__:null,render:X,hydrate:function n(t,e){X(t,e,n)},createElement:$,h:$,Fragment:I,createRef:function(){return{current:m}},isValidElement:i,Component:P,cloneElement:function(t,e,i){var r,o,f,u,c=M({},t.props);for(f in t.type&&t.type.defaultProps&&(u=t.type.defaultProps),e)"key"==f?r=e[f]:"ref"==f?o=e[f]:c[f]=e[f]===g&&u!=g?u[f]:e[f];return arguments.length>2&&(c.children=arguments.length>3?n.call(arguments,2):i),A(t.type,c,r||t.key,o||t.ref,m)},createContext:function(n){function t(n){var e,i;return this.getChildContext||(e=new Set,(i={})[t.__c]=this,this.getChildContext=function(){return i},this.componentWillUnmount=function(){e=m},this.shouldComponentUpdate=function(n){this.props.value!=n.value&&e.forEach(function(n){n.__e=!0,L(n)})},this.sub=function(n){e.add(n);var t=n.componentWillUnmount;n.componentWillUnmount=function(){e&&e.delete(n),t&&t.call(n)}}),n.children}return t.__c="__cC"+d++,t.__=n,t.Provider=t.__l=(t.Consumer=function(n,t){return n.children(t)}).contextType=t,t},toChildArray:function n(t,e){return e=e||[],t==m||"boolean"==typeof t||(C(t)?t.some(function(t){n(t,e)}):e.push(t)),e},options:t},typeof module<"u"?module.exports=v:self.preact=v});
+//# sourceMappingURL=preact.min.umd.js.map
+</script>
+<script>
+(function(){
+var h=preact.h;
+var RE=/\{\{\s*([\w$.]+)\s*\}\}/g, ONE=/^\{\{\s*([\w$.]+)\s*\}\}$/;
+function look(path,scope){ if(path==='true')return true; if(path==='false')return false; if(/^-?\d+(\.\d+)?$/.test(path))return +path;
+  var parts=path.split('.'), v=scope[parts[0]]; for(var i=1;i<parts.length;i++){ if(v==null)return undefined; v=v[parts[i]]; } return v; }
+function interp(str,scope){ var m=str.match(ONE); if(m) return look(m[1],scope); return str.replace(RE,function(_,p){var v=look(p,scope);return v==null?'':String(v);}); }
+function kids(node,scope){ var out=[]; node.childNodes.forEach(function(c){ var r=conv(c,scope); if(Array.isArray(r)) out.push.apply(out,r); else if(r!=null&&r!==false) out.push(r); }); return out; }
+function conv(node,scope){
+  if(node.nodeType===3){ var t=node.nodeValue; if(t.indexOf('{{')<0) return t; var v=interp(t,scope); return v==null?'':String(v); }
+  if(node.nodeType!==1) return null;
+  var tag=node.localName;
+  if(tag==='sc-if'){ return interp(node.getAttribute('value'),scope)?kids(node,scope):null; }
+  if(tag==='sc-for'){ var list=interp(node.getAttribute('list'),scope)||[], as=node.getAttribute('as')||'item', out=[];
+    list.forEach(function(item,i){ var s=Object.create(scope); s[as]=item; s.$index=i; var k=kids(node,s); out.push.apply(out,k); }); return out; }
+  var props={};
+  for(var i=0;i<node.attributes.length;i++){ var a=node.attributes[i], n=a.name; if(n.indexOf('hint-')===0) continue;
+    var val=a.value.indexOf('{{')>=0?interp(a.value,scope):a.value;
+    if(n.slice(0,2)==='on'){ props['on'+n.charAt(2).toUpperCase()+n.slice(3)]=val; } else props[n]=val; }
+  return h(tag,props,kids(node,scope));
+}
+window.DCLogic=function(){};
+window.__mount=function(tplHTML, Comp){
+  var tpl=document.createElement('template'); tpl.innerHTML=tplHTML;
+  var root=null; tpl.content.childNodes.forEach(function(c){ if(c.nodeType===1&&!root) root=c; });
+  var Base=function(p){ preact.Component.call(this,p); };
+  Base.prototype=Object.create(preact.Component.prototype);
+  Base.prototype.render=function(){ return conv(root,this.renderVals()); };
+  return Base;
+};
+})();
+</script>
+<script>
+var DCLogic=window.__mount(document.getElementById('tpl').innerHTML);
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { screen: 'intro', look: 'dreamy', pos: 'gate', walking: false, facing: 1, open: null, visited: {}, phase: 'explore', pass: false, shot: 'home' };
+  }
+  componentWillUnmount() { if (this.t) clearTimeout(this.t); }
+  renderVals() {
+    const s = this.state;
+    const MAP = 'map.webp';
+    const LOOKS = {
+      smart: { name: 'busy girl', src: 'busy.webp' },
+      dreamy: { name: 'dreamy girl', src: 'dreamy.webp' },
+      dopamine: { name: 'dopamine girl', src: 'dopamine.webp' },
+      extra: { name: 'EXTRA-girl', src: 'extra.webp' }
+    };
+    // точки на карте (в координатах карты 1000×1000): l* — само место, s* — где встаёт героиня
+    const P = {
+      gate:   { name: 'ворота', lx: 605, ly: 515, sx: 600, sy: 575, r: 70 },
+      hall:   { name: 'большой зал', lx: 420, ly: 500, sx: 425, sy: 600, r: 120 },
+      lib:    { name: 'библиотека', lx: 465, ly: 780, sx: 470, sy: 870, r: 95 },
+      pizza:  { name: 'пиццерия', lx: 250, ly: 670, sx: 255, sy: 740, r: 95 },
+      pond:   { name: 'пруд', lx: 415, ly: 650, sx: 360, sy: 700, r: 85 },
+      campus: { name: 'кампусы', lx: 565, ly: 640, sx: 570, sy: 715, r: 100 },
+      stars:  { name: 'эмпайр-стейт', lx: 740, ly: 570, sx: 745, sy: 690, r: 115 }
+    };
+    const order = ['hall', 'lib', 'pizza', 'pond', 'campus'];
+    const SAY = {
+      gate: 'привет! я старшекурсница lazy campus. нажимай на точки, я проведу',
+      hall: 'это большой зал: здесь лекции директора',
+      lib: 'библиотека! тут все 115 уроков',
+      pizza: 'а здесь мы болтаем по вечерам',
+      pond: 'пикник с ментором каждый будний день',
+      campus: 'здесь живут менторы со своими кампусами',
+      stars: 'с крыши эмпайр-стейт видно наших звёзд',
+      lib_final: 'последняя точка: снова библиотека',
+      done: 'ты обошла весь кампус! жми «дальше»'
+    };
+    const cur = P[s.pos];
+    const look = LOOKS[s.look];
+    const visitedCount = order.filter((k) => s.visited[k]).length;
+    const all = visitedCount >= 5;
+
+    const walkTo = (id, phase) => {
+      if (s.walking) return;
+      const from = P[s.pos], to = P[id];
+      this.setState({ pos: id, walking: true, open: null, facing: to.sx < from.sx ? -1 : 1, phase: phase || s.phase });
+      if (this.t) clearTimeout(this.t);
+      this.t = setTimeout(() => {
+        const v = Object.assign({}, this.state.visited); v[id] = true;
+        this.setState({ walking: false, open: (phase === 'final') ? 'final' : id, visited: v });
+      }, 1450);
+    };
+
+    const CX = 195, CY = 338;
+    const sheetUp = !!s.open && !s.walking;
+    const overview = s.phase === 'explore' && !sheetUp;
+    const K = overview ? 0.86 : 1;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    // карта всегда закрывает видимую часть экрана: при открытом рассказе низ карты прячется под шторкой,
+    // поэтому камера может подняться выше и героиня стоит над шторкой
+    const SHEET_TOP = 374;
+    const panX = clamp(overview ? -205 * K : CX - cur.sx * K, 390 - 1000 * K, 0);
+    const panY = clamp((sheetUp ? 300 : CY) - cur.sy * K, (sheetUp ? SHEET_TOP + 30 : 844) - 1000 * K, 0);
+    const charX = cur.sx * K + panX;
+    const charY = cur.sy * K + panY;
+    const bubX = Math.max(140, Math.min(250, charX));
+    const bubBottom = Math.min(844 - (charY - 150 * K) + 12, 844 - 150 - 90);
+    const headY = charY - 150 * K;
+    const lensIds = ['gate'].concat(Object.keys(s.visited).filter((k) => !(s.walking && k === s.pos)));
+    const lenses = lensIds.map((k) => {
+      const p = P[k]; const r = p.r;
+      return {
+        style: 'position:absolute;left:' + (p.lx - r) + 'px;top:' + (p.ly - r) + 'px;width:' + (2 * r) + 'px;height:' + (2 * r) + 'px;border-radius:50%;overflow:hidden;-webkit-mask-image:radial-gradient(circle,#000 58%,transparent 71%);mask-image:radial-gradient(circle,#000 58%,transparent 71%)',
+        imgStyle: 'position:absolute;left:' + (r - p.lx) + 'px;top:' + (r - p.ly) + 'px;width:1000px;height:1000px;max-width:none'
+      };
+    });
+    const pins = order.filter((k) => !s.visited[k]).map((k) => ({
+      name: P[k].name, go: () => walkTo(k),
+      wrap: 'position:absolute;left:' + P[k].lx + 'px;top:' + P[k].ly + 'px;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2'
+    }));
+    const checks = order.filter((k) => s.visited[k] && !(s.walking && k === s.pos)).map((k) => ({
+      style: 'position:absolute;left:' + (P[k].lx + 18) + 'px;top:' + (P[k].ly - 46) + 'px;width:26px;height:26px;border-radius:50%;background:#f2618f;border:2px solid #FFFFFF;display:flex;align-items:center;justify-content:center;z-index:2'
+    }));
+    const stepIdx = s.screen === 'app' ? 2 : (s.phase === 'explore' ? 1 : (s.phase === 'stars' ? 3 : 4));
+    const sayKey = (s.walking || s.open || s.phase !== 'explore') ? null : (all ? 'done' : (visitedCount === 0 ? 'gate' : null));
+    const kickers = { lib: 'место 1 · библиотека', hall: 'место · большой зал', pizza: 'место · пиццерия', pond: 'место · пруд', campus: 'место · кампусы', stars: 'шаг 3 · обсерватория', final: 'шаг 4 · финальная точка' };
+    const days = ['пн','вт','ср','чт','пт','сб','вс'];
+    const shotDefs = [['home','главная'],['track','трек и шаги'],['look','распаковка']];
+    return {
+      isIntro: s.screen === 'intro', isMapLike: s.screen !== 'intro', isApp: s.screen === 'app',
+      looks: Object.keys(LOOKS).map((k) => ({
+        name: LOOKS[k].name, src: LOOKS[k].src,
+        pick: () => this.setState({ look: k }),
+        style: 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border-radius:20px;cursor:pointer;font-family:RC,sans-serif;color:#3f5f80;text-transform:lowercase;' + (s.look === k ? 'background:#FFFFFF;border:3px solid #f2618f;box-shadow:0 8px 18px rgba(63,95,128,.18)' : 'background:rgba(255,255,255,.45);border:3px solid transparent')
+      })),
+      start: () => this.setState({ screen: 'map' }),
+      lookSrc: look.src,
+      panStyle: 'position:absolute;left:0;top:0;width:1000px;height:1000px;transform-origin:0 0;transform:translate(' + panX + 'px,' + panY + 'px) scale(' + K + ')',
+      sayStyle: 'position:absolute;left:' + bubX + 'px;bottom:' + bubBottom + 'px;transform:translateX(-50%);width:max-content;max-width:260px;padding:10px 16px;border-radius:20px;background:#FFF8DC;box-shadow:0 8px 20px rgba(63,95,128,.22);font-size:16px;line-height:1.35;text-align:center;z-index:3',
+      tailStyle: 'position:absolute;left:calc(50% + ' + Math.round(charX - bubX) + 'px);bottom:-7px;width:16px;height:16px;margin-left:-8px;background:#FFF8DC;transform:rotate(45deg)',
+      lenses: lenses,
+      showPins: s.phase === 'explore' && !s.walking && !s.open,
+      pins: pins, checks: checks,
+      walkerStyle: 'position:absolute;left:' + cur.sx + 'px;top:' + cur.sy + 'px;width:0;height:0;z-index:3',
+      faceStyle: 'position:absolute;left:0;bottom:0;transform:translateX(-50%) scaleX(' + s.facing + ');transform-origin:0 100%',
+      stepClass: s.walking ? 'walking' : 'idle',
+      showSay: !!sayKey && !s.open,
+      say: sayKey ? SAY[sayKey] : '',
+      stepLabel: 'шаг ' + stepIdx + ' из 4',
+      bars: [1,2,3,4].map((i) => ({ style: 'height:4px;border-radius:4px;background:' + (i <= stepIdx ? '#f2618f' : 'rgba(255,255,255,.7)') })),
+      showHint: s.phase === 'explore' && !s.open && !s.walking,
+      visitedCount: visitedCount,
+      hintText: all ? 'весь кампус пройден! дальше покажу новинку потока' : 'нажми на розовую точку, и героиня отведёт тебя туда',
+      notAll: !all,
+      showDone: all && s.phase === 'explore' && !s.open && !s.walking,
+      toApp: () => this.setState({ screen: 'app', open: null }),
+      toStars: () => { this.setState({ screen: 'map' }); walkTo('stars', 'stars'); },
+      toFinal: () => walkTo('lib', 'final'),
+      sheetOpen: !!s.open && !s.walking,
+      canClose: s.phase === 'explore',
+      closeSheet: () => this.setState({ open: null }),
+      sheetKicker: kickers[s.open] || '',
+      isLib: s.open === 'lib', isHall: s.open === 'hall', isPizza: s.open === 'pizza', isPond: s.open === 'pond', isCampus: s.open === 'campus', isStars: s.open === 'stars', isFinal: s.open === 'final',
+      topics: [
+        { name: 'личный бренд', n: 8 }, { name: 'упаковка профиля и рилс', n: 10 },
+        { name: 'стиль, съёмка и монтаж', n: 18 }, { name: 'сторис', n: 9 },
+        { name: 'монетизация и продвижение', n: 10 }, { name: 'работа с брендами', n: 16 },
+        { name: 'ugc', n: 3 }, { name: 'продукт, прогрев и продажи', n: 19 },
+        { name: 'многоканальность', n: 18 }
+      ],
+      week: days.map((d, i) => ({ day: d, note: i < 5 ? 'дежурный' : (i === 5 ? 'выходной' : 'основной'),
+        style: 'display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 0;border-radius:14px;' + (i < 5 ? 'background:#4a77a0;color:#FFFFFF' : (i === 5 ? 'background:rgba(255,255,255,.35);color:#3f5f80;border:1.5px dashed #FFFFFF' : 'background:#FFFFFF;color:#3f5f80')) })),
+      campuses: [
+        { name: 'ambitious princess', mentor: 'аня корпунова' },
+        { name: 'intellectual women', mentor: 'даша морковских' },
+        { name: 'money talks', mentor: 'катя тэва' },
+        { name: 'pink place', mentor: 'анна-мария' },
+        { name: 'drama queen core', mentor: 'софи борисова' },
+        { name: 'big life energy', mentor: 'паша' }
+      ],
+      shots: shotDefs.map((d) => ({ label: d[1], pick: () => this.setState({ shot: d[0] }),
+        style: 'min-height:40px;padding:6px 14px;border-radius:999px;border:2px solid #FFFFFF;font-family:RC,sans-serif;font-size:15px;cursor:pointer;text-transform:lowercase;' + (s.shot === d[0] ? 'background:#FFFFFF;color:#c2316b;font-weight:700' : 'background:rgba(255,255,255,.5);color:#3f5f80') })),
+      shotHome: s.shot === 'home', shotTrack: s.shot === 'track', shotLook: s.shot === 'look',
+      noPass: !s.pass, hasPass: !!s.pass,
+      takePass: () => this.setState({ pass: true }),
+      restart: () => { if (this.t) clearTimeout(this.t); this.setState({ screen: 'intro', pos: 'gate', walking: false, facing: 1, open: null, visited: {}, phase: 'explore', pass: false, shot: 'home' }); }
+    };
+  }
+}
+
+preact.render(preact.h(Component,{}),document.getElementById('stage'));
+function fit(){var s=Math.min(window.innerWidth/390,window.innerHeight/844);document.getElementById('stage').style.transform='translate(-50%,-50%) scale('+s+')';}
+window.addEventListener('resize',fit);fit();
+</script>
+</body>
+</html>
